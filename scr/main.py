@@ -1,8 +1,9 @@
 import copy
 import csv
 
-WL_LTR_OFFSET = 3
-UU_LTR_OFFSET = 1
+WL_LTR_OFFSET = 3 #Whitelisted letter offset
+UU_LTR_OFFSET = 1 #Unused letter offset
+LT_DST_OFFSET = 1 #Letter distribution offset
 
 def lf(words):
     letter_frequency = {}
@@ -19,8 +20,10 @@ def val(words, lf, wl_letters, uu_letters):
         values.append([word, 0])
         for letter in word:
             values[-1][1] += lf[letter]
-            if letter in wl_letters: values[-1][1] += WL_LTR_OFFSET
-            if letter in uu_letters: values[-1][1] += UU_LTR_OFFSET
+            if letter in wl_letters: values[-1][1] += WL_LTR_OFFSET #Reward whitelisted letters
+            if letter in uu_letters: values[-1][1] += UU_LTR_OFFSET #Reward unused letters
+        
+        values[-1][1] += len(set(list(word)))*LT_DST_OFFSET #Reward a distribution of letters.
     return values
 
 class wordle_guesser:
