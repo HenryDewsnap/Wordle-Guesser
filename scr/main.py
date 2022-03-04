@@ -47,7 +47,10 @@ class wordle_guesser:
     def check_conditions(self):
         for word in range(len(self.wv)): self.wv[word][1] = 0
 
+        
         for bl_letter in self.bl_letters:
+            ##If bl_letter in wl_letter or bl_letter in known_positions:
+                ##Continue
             for word in copy.copy(self.in_use_words[0]):
                 for letter in word:
                     if letter == bl_letter: 
