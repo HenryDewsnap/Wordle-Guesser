@@ -1,7 +1,7 @@
 import copy
 import csv
 
-WL_LTR_OFFSET = 3 #Whitelisted letter offset
+WL_LTR_OFFSET = 4 #Whitelisted letter offset
 UU_LTR_OFFSET = 1 #Unused letter offset
 LT_DST_OFFSET = 1 #Letter distribution offset
 
@@ -47,10 +47,10 @@ class wordle_guesser:
     def check_conditions(self):
         for word in range(len(self.wv)): self.wv[word][1] = 0
 
-        
         for bl_letter in self.bl_letters:
-            ##If bl_letter in wl_letter or bl_letter in known_positions:
-                ##Continue
+            if bl_letter in self.wl_letters or bl_letter in self.known_positions:
+                continue
+
             for word in copy.copy(self.in_use_words[0]):
                 for letter in word:
                     if letter == bl_letter: 
@@ -63,7 +63,6 @@ class wordle_guesser:
                     if word[known_pos] != self.known_positions[known_pos] or self.known_positions[known_pos] in f"{word[0:known_pos]}{word[known_pos+1::]}": self.in_use_words[0].remove(word)
 
         for known_not_pos in self.known_not_positions:
-            print(known_not_pos)
             for word in copy.copy(self.in_use_words[0]):
                 if word[known_not_pos[1]] == known_not_pos[0]: self.in_use_words[0].remove(word)
 
@@ -73,24 +72,20 @@ class wordle_guesser:
         self.get_info()
         self.wv.sort(key=lambda x: x[1])
 
-
 if __name__ == "__main__":
     wg = wordle_guesser()
     while True:
         wg.check_conditions()
-        for wv in wg.wv: print(f"Word: {wv[0]} ¦¦ Certainty: {wv[1]}")
+        for wv in wg.wv: print(f"Word: {wv[0]} ¦¦ Certainty: {(wv[1]/wg.wv[-1][1])*100}%")
         
         wg.bl_letters += input("New Black Listed Letters (SEPERATED BY ','): ").split(",")
-        
-        
+
         while True:
             if input("Any WhiteListed letters? (y/n): ") == "n": break
             data = [input("Letter: "), int(input("Position: "))-1]
             wg.known_not_positions.append(data)
             wg.wl_letters.append(data[0])
 
-
         while True:
             if input("Are there any known positions? (y/n): ") == "n": break
-
             wg.known_positions[int(input("Location (INT): "))-1] = input("Character (CHAR): ")
